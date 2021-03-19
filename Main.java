@@ -1,9 +1,57 @@
-import java.util.Stack;
+import java.util.ArrayList;
 
 public class Main {
+	static Ciudad[] ciudades = ciudades();
+	static Ciudad origen;
+	static Ciudad destino;
+	static ArrayList<Camino> caminos;
+	
 	public static void main(String[] args) {
-		Ciudad[] ciudades = ciudades();
+		origen = ciudades[0];
+		destino = ciudades[12];
 		
+		caminos = new ArrayList<>();
+		Camino caminoAuxiliar = new Camino();
+		caminoAuxiliar.agregarCiudad(origen, 0);
+		mostrarCamino(profundidad(origen, caminoAuxiliar));
+	}
+	
+	public static void mostrarCamino(Camino camino) {
+		System.out.println("Ciudad\t\tCosto");
+		for (int i = 0; i < camino.ciudades.size(); i++) {
+			System.out.println(camino.ciudades.get(i).nombre + "\t\t" + camino.costos.get(i));
+		}
+		System.out.println("Costo total\t" + camino.costoTotal);
+	}
+	
+	public static Camino costoUniforme(Ciudad ciudad, Camino caminoActual) {
+		Camino caminoAuxiliar = null;
+		if (ciudad.nombre.equals(destino.nombre)) {
+			return caminoActual;
+		}
+		return caminoAuxiliar;
+	}
+	
+	public static Camino profundidad(Ciudad ciudad, Camino caminoActual) {
+		Camino caminoAuxiliar;
+		if (ciudad.nombre.equals(destino.nombre)) {
+			return caminoActual;
+		}
+		for (int i = 0; i < ciudad.colindantes.size(); i++) {
+			Ciudad siguiente = ciudad.colindanteSiguiente();
+			if (!caminoActual.contieneCiudad(siguiente)) {
+				Camino nuevoCamino = new Camino(caminoActual);
+				nuevoCamino.agregarCiudad(
+					siguiente,
+					ciudad.distanciaColindante(siguiente)
+				);
+				caminoAuxiliar = profundidad(siguiente, nuevoCamino);
+				if (caminoAuxiliar != null) {
+					return caminoAuxiliar;
+				}
+			}
+		}
+		return caminoActual;
 	}
 	
 	public static Ciudad[] ciudades() {
